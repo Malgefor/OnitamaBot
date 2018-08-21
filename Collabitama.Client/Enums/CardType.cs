@@ -1,5 +1,7 @@
-﻿namespace Collabitama.Client.Enums {
-    public enum CardType {
+﻿namespace Collabitama.Client.Enums
+{
+    public enum CardType
+    {
         Tiger,
         Dragon,
         Frog,

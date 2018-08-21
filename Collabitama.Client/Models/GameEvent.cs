@@ -1,26 +1,36 @@
 ﻿using Collabitama.Client.Enums;
 
-namespace Collabitama.Client.Models {
-    public abstract class Move {
-        private Move(CardType usedCard) {
-            UsedCard = usedCard;
+namespace Collabitama.Client.Models
+{
+    public abstract class Move
+    {
+        private Move(CardType usedCard)
+        {
+            this.UsedCard = usedCard;
         }
 
-        public CardType UsedCard { get; }
+        public CardType UsedCard { get; set; }
 
-        public class Pass : Move {
-            public Pass(CardType usedCard) : base(usedCard) { }
+        public class Pass : Move
+        {
+            public Pass(CardType usedCard)
+                : base(usedCard)
+            {
+            }
         }
 
-        public class Play : Move {
+        public class Play : Move
+        {
             public Play(CardType usedCard, Position from, Position to)
-                : base(usedCard) {
-                From = from;
-                To = to;
+                : base(usedCard)
+            {
+                this.From = from;
+                this.To = to;
             }
 
-            public Position From { get; }
-            public Position To { get; }
+            public Position From { get; set; }
+
+            public Position To { get; set; }
         }
     }
 }

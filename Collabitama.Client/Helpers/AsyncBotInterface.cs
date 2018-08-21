@@ -1,48 +1,55 @@
 ﻿using System;
 using System.Threading;
+
 using RemoteBotClient;
 
-namespace Collabitama.Client.Helpers {
-    public class AsyncBotInterface {
-        private readonly IBotInterface _botInterface;
-        private readonly AutoResetEvent _getInput;
-        private readonly AutoResetEvent _gotInput;
-        private readonly int _timeOutMillisecs;
-        private string _input;
+namespace Collabitama.Client.Helpers
+{
+    public class AsyncBotInterface
+    {
+        private readonly IBotInterface botInterface;
+        private readonly AutoResetEvent getInput;
+        private readonly AutoResetEvent gotInput;
+        private readonly int timeOutMillisecs;
+        private string input;
 
-        public AsyncBotInterface(string apiKey, int timeOutMillisecs) {
-            _botInterface = RemoteBotClientInitializer.Init(apiKey, false);
-            _getInput = new AutoResetEvent(false);
-            _gotInput = new AutoResetEvent(false);
-            _timeOutMillisecs = timeOutMillisecs;
+        public AsyncBotInterface(string apiKey, int timeOutMillisecs)
+        {
+            this.botInterface = RemoteBotClientInitializer.Init(apiKey, false);
+            this.getInput = new AutoResetEvent(false);
+            this.gotInput = new AutoResetEvent(false);
+            this.timeOutMillisecs = timeOutMillisecs;
 
-            var inputThread = new Thread(Reader) {
-                IsBackground = true
-            };
+            var inputThread = new Thread(Reader) { IsBackground = true };
 
             inputThread.Start();
         }
 
-        private void Reader() {
-            while (true) {
-                _getInput.WaitOne();
-                _input = _botInterface.ReadLine();
-                _gotInput.Set();
-            }
-        }
+        public string ReadLine()
+        {
+            this.getInput.Set();
 
-        public string ReadLine() {
-            _getInput.Set();
-
-            if (_gotInput.WaitOne(_timeOutMillisecs)) {
-                return _input;
+            if (this.gotInput.WaitOne(this.timeOutMillisecs))
+            {
+                return this.input;
             }
 
             throw new TimeoutException("Server did not provide data within the timelimit.");
         }
 
-        public void WriteLine(string input) {
-            _botInterface.WriteLine(input);
+        public void WriteLine(string botInput)
+        {
+            this.botInterface.WriteLine(botInput);
+        }
+
+        private void Reader()
+        {
+            while (true)
+            {
+                this.getInput.WaitOne();
+                this.input = this.botInterface.ReadLine();
+                this.gotInput.Set();
+            }
         }
     }
 }
